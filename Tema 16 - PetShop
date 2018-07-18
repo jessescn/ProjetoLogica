@@ -1,0 +1,10 @@
+Tema 16: Pet shop
+
+  Um dado Pet shop está realizando uma feira de doações de animais. Na feira, há 3 tipos de animais disponíveis para a adoção: 
+pequeno porte, médio porte e grande porte. Os tipos de adoções disponíveis são 9, no total. As adoções de animais de pequeno e
+médio porte incluem uma pequena gaiola para transporte, já os animais de grande porte possuem uma porção de ração, obrigatoria 
+mente. Para uma doação, a pessoa interessada pode solicitar apenas 3 tipos de animais disponíveis, sendo 2 de pequeno porte e 1
+de médio porte, 2 de médio porte e 1 de pequeno porte ou 2 de pequeno porte e 1 de grande porte.Só se pode adotar um animal de 
+grande porte. Uma adoção precisa ter, pelo menos, um animal de pequeno porte.
+
+Cliente: José Ivan
