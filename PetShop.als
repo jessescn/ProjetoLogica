@@ -22,18 +22,19 @@ abstract sig Animal {
     brinde: one Brinde
 }
 
+sig AnimalPequeno, AnimalMedio, AnimalGrande extends Animal{}
+
 abstract sig Brinde{}
 
 sig gaiola, racao extends Brinde{}
-
-sig AnimalPequeno, AnimalMedio, AnimalGrande extends Animal{}
 
 sig Pessoa {
     adocoes: set Animal
 }
 
--- falta o fato de so poder ter um animal grande
-fact Nome {
+-- Fatos --
+-- Obs.falta o fato de so poder ter um animal grande
+fact Premissas {
     
     all p: Pessoa | some animaisDasAdocoes[p]
     all a: Animal | lone dono[a]
@@ -42,11 +43,12 @@ fact Nome {
     all a: Animal | (isAnimalMedio[a] || isAnimalPequeno[a]) => brindeDoAnimal[a] in gaiola
     all a: Animal | (a in AnimalGrande) => brindeDoAnimal[a] in racao
     all p: Pessoa | (#animaisDasAdocoes[p] >= 1) =>  (some a: animaisDasAdocoes[p] | isAnimalPequeno[a])
-    all p: Pessoa | (#animaisDasAdocoes[p] >= 1) =>  not todosPequenos[p]
+    all p: Pessoa | (#animaisDasAdocoes[p]  = 3) => not todosPequenos[p]
     all p: Pessoa |  not umDeCada[p]
-    
 
 }
+
+-- Funcoes --
 
 fun brindeDoAnimal[a: Animal]: set Brinde{
     a.brinde
@@ -60,12 +62,22 @@ fun dono[a: Animal]: set Pessoa {
     a.~adocoes
 }
 
+-- Predicados --
+
 pred todosPequenos[p:Pessoa]{
     all a : p.adocoes | a in AnimalPequeno 
 }
 
 pred umDeCada[p:Pessoa]{
       (#animaisDasAdocoes[p] = 3) => some a : animaisDasAdocoes[p] | a in AnimalPequeno && some a : animaisDasAdocoes[p] | a in AnimalMedio &&  some a : animaisDasAdocoes[p]| a in AnimalGrande	
+}
+
+pred umBrinde[b: Brinde]{
+    one brinde.b
+}
+
+pred tresAnimais[p:Pessoa]{
+    #p.adocoes <= 3
 }
 
 pred isAnimalMedio[a: Animal]{
@@ -80,13 +92,7 @@ pred isAnimalGrande[a: Animal]{
     a in AnimalGrande
 }
 
-pred umBrinde[b: Brinde]{
-    one brinde.b
-}
 
-pred tresAnimais[p: Pessoa]{
-    #p.adocoes <= 3
-}
 
 --------------------------TESTES-------------------------------
 
@@ -101,26 +107,32 @@ assert peloMenosUmAnimalPequeno{
 }
 
 --- nenhum animal pequeno pode ter ração
-assert NenhumAnimalPequenoComRacao{
+assert nenhumAnimalPequenoComRacao{
 	all a: Animal | (isAnimalPequeno[a]) => not a.brinde in racao
 }
 
 --- nenhum animal grande pode ter gaiola
-assert NenhumAnimalGrandeComGaiola{
+assert nenhumAnimalGrandeComGaiola{
 	all a: Animal | (isAnimalGrande[a]) => not a.brinde in gaiola
 }
 
 --- nenhum animal pode ter mais de um dono
-assert AnimalComMaisDeUmDono{
+assert animalComMaisDeUmDono{
 	all a: Animal | not  #dono[a] > 1
 }
 
 --- nenhuma pessoa pode ter 0 animais
-assert PessoaSemAnimal{
+assert pessoaSemAnimal{
 	all p: Pessoa | not #animaisDasAdocoes[p] = 0
 }
-
+-- nenhuma doacao com todos sendo animais pequenos
+assert todosPequenos{
+	all p: Pessoa | not todosPequenos[p]
+}
+--- Todos os testes juntos (Obs. o Alloy so roda o primeiro teste)  
 assert All{
+
+     all p: Pessoa | not todosPequenos[p]
 	all p: Pessoa | not #animaisDasAdocoes[p] = 0
      all a: Animal | not  #dono[a] > 1
      	all a: Animal | (isAnimalGrande[a]) => not a.brinde in gaiola
@@ -129,12 +141,20 @@ assert All{
 	all p: Pessoa | #animaisDasAdocoes[p] <= 3
 }
 
+
+-- Checks e Runs --
+
+pred show[]{
+	#Pessoa = 1
+}
+run show for 10
 check All
-check PessoaSemAnimal
+check todosPequenos
+check pessoaSemAnimal
 check max3PorPessoa
 check peloMenosUmAnimalPequeno
-check NenhumAnimalPequenoComRacao
-check NenhumAnimalGrandeComGaiola
-check AnimalComMaisDeUmDono
+check nenhumAnimalPequenoComRacao
+check nenhumAnimalGrandeComGaiola
+check animalComMaisDeUmDono
 
 
