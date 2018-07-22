@@ -27,7 +27,7 @@ fact Premissas {
     all p: Pessoa | some animaisDasAdocoes[p]
     all a: Animal | lone dono[a]
     all ac: Acessorio | umAcessorio[ac]
-    all p: Pessoa | tresAnimais[p]
+    all p: Pessoa | maxAnimais[p]
     all a: Animal | (isAnimalMedio[a] || isAnimalPequeno[a]) => acessorioDoAnimal[a] in gaiola
     all a: Animal | (a in AnimalGrande) => acessorioDoAnimal[a] in racao
     all p: Pessoa | (#animaisDasAdocoes[p] >= 1) =>  (some a: animaisDasAdocoes[p] | isAnimalPequeno[a])
@@ -58,8 +58,8 @@ fun dono[a: Animal]: set Pessoa {
 
 // Pode haver apenas um animal grande por adocao
 pred apenasUmGrande[p: Pessoa]{
-
   lone g : AnimalGrande | g in p.adocoes
+
 }
 
 // NEG : Em uma adocao, todos os animais sao pequenos
@@ -69,7 +69,7 @@ pred todosPequenos[p:Pessoa]{
 
 // NEG: Existe uma adocao onde se encontram todos os tipos
 pred umDeCada[p:Pessoa]{
-      (#animaisDasAdocoes[p] = 3) => some a : animaisDasAdocoes[p] | a in AnimalPequeno && some a : animaisDasAdocoes[p] | a in AnimalMedio &&  some a : animaisDasAdocoes[p]| a in AnimalGrande	
+    (#animaisDasAdocoes[p] = 3) => some a : animaisDasAdocoes[p] | a in AnimalPequeno && some a : animaisDasAdocoes[p] | a in AnimalMedio &&  some a : animaisDasAdocoes[p]| a in AnimalGrande	
 }
 
 // Retorna o acessorio do animal
@@ -78,7 +78,7 @@ pred umAcessorio[ac: Acessorio]{
 }
 
 // A quantidade maxima de animais por adocao é 3
-pred tresAnimais[p:Pessoa]{
+pred maxAnimais[p:Pessoa]{
     #p.adocoes <= 3
 }
 
@@ -101,51 +101,52 @@ pred isAnimalGrande[a: Animal]{
 
 --------------------------TESTES-------------------------------
 
---- não pode ter pessoa com mais de 3 animais
+// não pode ter pessoa com mais de 3 animais
 assert max3PorPessoa{
 	all p: Pessoa | #animaisDasAdocoes[p] <= 3
 }
 
---- não pode ter adoção sem nenhum animal pequeno
+// não pode ter adoção sem nenhum animal pequeno
 assert peloMenosUmAnimalPequeno{
 	 all p: Pessoa | (#animaisDasAdocoes[p] >= 1) =>  (some a: animaisDasAdocoes[p] | isAnimalPequeno[a])
 }
 
---- nenhum animal pequeno pode ter ração
+// nenhum animal pequeno pode ter ração
 assert nenhumAnimalPequenoComRacao{
 	all a: Animal | (isAnimalPequeno[a]) => not a.acessorio in racao
 }
 
---- nenhum animal grande pode ter gaiola
+// nenhum animal grande pode ter gaiola
 assert nenhumAnimalGrandeComGaiola{
 	all a: Animal | (isAnimalGrande[a]) => not a.acessorio in gaiola
 }
 
---- nenhum animal pode ter mais de um dono
+// nenhum animal pode ter mais de um dono
 assert animalComMaisDeUmDono{
 	all a: Animal | not  #dono[a] > 1
 }
 
---- nenhuma pessoa pode ter 0 animais
+// nenhuma pessoa pode ter 0 animais
 assert pessoaSemAnimal{
 	all p: Pessoa | not #animaisDasAdocoes[p] = 0
 }
--- nenhuma doacao com todos sendo animais pequenos
+// nenhuma doacao com todos sendo animais pequenos
 assert todosPequenos{
 	all p: Pessoa | not todosPequenos[p]
 }
 
---- Todos os testes juntos (Obs. o Alloy so roda o primeiro teste)  
+// Todos os testes juntos (Obs. o Alloy so roda o primeiro teste)  
 assert All{
 
      all p: Pessoa | not todosPequenos[p]
-	all p: Pessoa | not #animaisDasAdocoes[p] = 0
+	all p: Pessoa | not #animaisDasAdocoes[p] <= 0
      all a: Animal | not  #dono[a] > 1
      	all a: Animal | (isAnimalGrande[a]) => not a.acessorio in gaiola
 	all a: Animal | (isAnimalPequeno[a]) => not a.acessorio in racao
 	all p: Pessoa | (#animaisDasAdocoes[p] >= 1) =>  (some a: animaisDasAdocoes[p] | isAnimalPequeno[a])
 	all p: Pessoa | #animaisDasAdocoes[p] <= 3
      all p: Pessoa | apenasUmGrande[p]
+ 
 }
 
 
@@ -153,7 +154,7 @@ assert All{
 
 pred show[]{
 }
-run show
+run show for 10
 
 check All
 check todosPequenos
