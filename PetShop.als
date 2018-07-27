@@ -108,6 +108,12 @@ pred isAnimalGrande[a: Animal]{
 }
 
 
+--------- Run -----------
+
+pred show[]{}
+
+run show for 10
+
 
 --------------------------TESTES-------------------------------
 
@@ -116,40 +122,56 @@ assert max3PorPessoa{
 	all p: Pessoa | not #animaisDasAdocoes[p] > 3
 }
 
+check max3PorPessoa for 10
+
 // não pode ter adoção sem nenhum animal pequeno
 assert peloMenosUmAnimalPequeno{
 	 all p: Pessoa | some a: animaisDasAdocoes[p] | isAnimalPequeno[a]
 }
+
+check peloMenosUmAnimalPequeno for 10
 
 // nenhum animal Pequeno ou Medio podem ter ração
 assert nenhumAnimalPequenoComRacao{
 	all a: Animal | (isAnimalPequeno[a]) => not a.acessorio in racao
 }
 
+check nenhumAnimalPequenoComRacao for 10
+
 // nenhum animal Grande pode ter gaiola
 assert nenhumAnimalGrandeComGaiola{
 	all a: Animal | (isAnimalGrande[a]) => not a.acessorio in gaiola
 }
+
+check nenhumAnimalGrandeComGaiola for 10
 
 // nenhum animal pode ter mais de um dono
 assert animalComMaisDeUmDono{
 	all a: Animal | not  #dono[a] > 1
 }
 
+check animalComMaisDeUmDono for 10
+
 // nenhuma pessoa pode ter 0 animais
 assert pessoaSemAnimal{
 	all p: Pessoa | not #animaisDasAdocoes[p] = 0
 }
+
+check pessoaSemAnimal for 10
 
 // nenhuma adoção de 3 animais com todos sendo animais pequenos
 assert todosPequenos{
 	all p: Pessoa | (#animaisDasAdocoes[p]  = 3) => not todosPequenos[p]
 }
 
+check todosPequenos for 10
+
 // As adoções podem ter no maximo um Grande
 assert somenteUmGrande{
 	all p: Pessoa | apenasUmGrande[p]
 }
+
+check somenteUmGrande for 10
 
 // Cada animal tem seu respectivo Acessorio
 assert maisDeUmAnimalPorAcessorio{
@@ -157,28 +179,17 @@ assert maisDeUmAnimalPorAcessorio{
 
 }
 
+check maisDeUmAnimalPorAcessorio for 10
+
 // Nenhum animal pode ter mais de um dono
 assert maisDeUmDonoPorAnimal{
 	all a: Animal | not #adocoes.a > 1	
 
 }
 
+check maisDeUmDonoPorAnimal for 10
 
--- Checks e Runs --
 
-pred show[]{
-}
-run show for 10
 
-check maisDeUmDonoPorAnimal
-check maisDeUmAnimalPorAcessorio
-check somenteUmGrande
-check todosPequenos
-check pessoaSemAnimal
-check max3PorPessoa
-check peloMenosUmAnimalPequeno
-check nenhumAnimalPequenoComRacao
-check nenhumAnimalGrandeComGaiola
-check animalComMaisDeUmDono
 
 
